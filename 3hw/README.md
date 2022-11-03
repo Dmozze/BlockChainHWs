@@ -1,3 +1,5 @@
+Just run python script (main.py)
+
 LOGS:
 
 True
