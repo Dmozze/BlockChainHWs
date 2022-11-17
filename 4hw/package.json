@@ -1,0 +1,15 @@
+{
+  "name": "hardhat-project",
+  "devDependencies": {
+    "@nomicfoundation/hardhat-toolbox": "^2.0.0",
+    "@typechain/ethers-v5": "^10.1.1",
+    "@typechain/hardhat": "^6.1.4",
+    "hardhat": "^2.12.2",
+    "typechain": "^8.1.1"
+  },
+  "dependencies": {
+    "@openzeppelin/contracts": "^4.8.0",
+    "@uniswap/hardhat-v3-deploy": "^0.1.1",
+    "@uniswap/v3-core": "^1.0.1"
+  }
+}
