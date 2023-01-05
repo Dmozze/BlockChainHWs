@@ -14,6 +14,10 @@ async function deployDAO() {
     return {dao, owner, userA, userB, userC};
 }
 
+const HASH = 12312;
+
+
+
 describe("base DAO", function () {
 
 
@@ -36,7 +40,6 @@ describe("base DAO", function () {
 
     it("create proposal + check ByHash search", async function () {
         const {dao, owner, userA} = await deployDAO();
-        const HASH = 123123;
         await dao.connect(userA).createProposal(HASH);
         expect(await dao.checkProposalInQueueByHash(HASH)).to.be.true;
         expect(await dao.checkProposalInQueueByHash(HASH + 1)).to.be.false;
@@ -65,7 +68,6 @@ describe("Base voting", function () {
     it("Base Voting YES", async function () {
         const {dao, owner, userA, userB} = await deployDAO();
         const coinsTransfer = 12;
-        const HASH = 12312;
         await dao.transfer(userA.address, coinsTransfer);
         await dao.connect(userA).createProposal(HASH);
         await dao.connect(userA).vote(HASH, true);
@@ -75,7 +77,6 @@ describe("Base voting", function () {
     it("Base Voting NO", async function () {
         const {dao, owner, userA, userB} = await deployDAO();
         const coinsTransfer = 12;
-        const HASH = 12312;
         await dao.transfer(userA.address, coinsTransfer);
         await dao.connect(userA).createProposal(HASH);
         await dao.connect(userA).vote(HASH, false);
@@ -87,7 +88,6 @@ describe("Base voting", function () {
         const {dao, owner, userA, userB} = await deployDAO();
         const coinsTransferA = 12;
         const coinsTransferB = 25;
-        const HASH = 12312;
         await dao.transfer(userA.address, coinsTransferA);
         await dao.transfer(userB.address, coinsTransferB);
         await dao.connect(userB).createProposal(HASH);
@@ -102,7 +102,6 @@ describe("Base voting", function () {
         const {dao, owner, userA, userB} = await deployDAO();
         const coinsTransferA = 12;
         const coinsTransferB = 25;
-        const HASH = 12312;
         await dao.transfer(userA.address, coinsTransferA);
         await dao.transfer(userB.address, coinsTransferB);
         await dao.connect(userB).createProposal(HASH);
@@ -117,7 +116,6 @@ describe("Base voting", function () {
         const {dao, owner, userA, userB} = await deployDAO();
         const coinsTransferA = 25;
         const coinsTransferB = 26;
-        const HASH = 12312;
         await dao.transfer(userA.address, coinsTransferA);
         await dao.transfer(userB.address, coinsTransferB);
         await dao.connect(userB).createProposal(HASH);
@@ -132,7 +130,6 @@ describe("Base voting", function () {
         const {dao, owner, userA, userB} = await deployDAO();
         const coinsTransferA = 25;
         const coinsTransferB = 26;
-        const HASH = 12312;
         await dao.transfer(userA.address, coinsTransferA);
         await dao.transfer(userB.address, coinsTransferB);
         await dao.connect(userB).createProposal(HASH);
@@ -148,7 +145,6 @@ describe("Base voting", function () {
         const {dao, owner, userA, userB} = await deployDAO();
         const coinsTransferA = 25;
         const coinsTransferB = 26;
-        const HASH = 12312;
         await dao.transfer(userA.address, coinsTransferA);
         await dao.connect(userA).createProposal(HASH);
         await dao.connect(userA).vote(HASH, false);
@@ -162,7 +158,6 @@ describe("Base voting", function () {
     it("check reverting of voting", async function () {
         const {dao, owner, userA, userB} = await deployDAO();
         const coinsTransferA = 25;
-        const HASH = 12312;
         await dao.transfer(userA.address, coinsTransferA);
         await dao.connect(userA).createProposal(HASH);
         await dao.connect(userA).vote(HASH, false);
@@ -185,7 +180,6 @@ describe("Transfer check", function () {
     it("Transfer with voting", async function () {
         const {dao, owner, userA, userB} = await deployDAO();
         const coinsTransfer = 12;
-        const HASH = 12312;
         await dao.transfer(userA.address, coinsTransfer);
         await dao.connect(userA).createProposal(HASH);
         await dao.connect(userA).vote(HASH, true);
@@ -199,7 +193,6 @@ describe("Transfer check", function () {
         const {dao, owner, userA, userB} = await deployDAO();
         const coinsTransferA = 12;
         const coinsTransferB = 25;
-        const HASH = 12312;
         await dao.transfer(userA.address, coinsTransferA);
         await dao.transfer(userB.address, coinsTransferB);
         await dao.connect(userA).createProposal(HASH);
@@ -220,7 +213,6 @@ describe("Transfer check", function () {
         const {dao, owner, userA, userB} = await deployDAO();
         const coinsTransferA = 12;
         const coinsTransferB = 25;
-        const HASH = 12312;
         await dao.transfer(userA.address, coinsTransferA);
         await dao.transfer(userB.address, coinsTransferB);
         await dao.connect(userA).createProposal(HASH);
@@ -246,7 +238,6 @@ describe("task from the statement", function () {
         const coinsTransferA = 25;
         const coinsTransferB = 40;
         const coinsTransferC = 35; // it is owner balance
-        const HASH = 12312;
         await dao.transfer(userA.address, coinsTransferA);
         await dao.transfer(userB.address, coinsTransferB);
         await dao.connect(userA).createProposal(HASH);
@@ -273,6 +264,21 @@ describe("task from the statement", function () {
         expect(await dao.yesVotes(HASH)).to.equal(0);
         await dao.connect(userB).vote(HASH, false);
         expect(await dao.proposalStatus(0)).to.equal(2);
+    });
+
+    it ("accepted with one more vote", async function () {
+        const {dao, owner, userA, userB} = await deployDAO();
+        const coinsTransferA = 50;
+        const coinsTransferB = 50;
+        await dao.transfer(userA.address, coinsTransferA);
+        await dao.transfer(userB.address, coinsTransferB);
+        await dao.connect(userA).createProposal(HASH);
+        expect(await dao.checkProposalInQueueByHash(HASH)).to.be.true;
+        await dao.connect(userA).vote(HASH, true);
+        expect(await dao.yesVotes(HASH)).to.equal(coinsTransferA);
+        expect(await dao.noVotes(HASH)).to.equal(0);
+        await dao.connect(userB).transfer(userA.address, 1);
+        expect(await dao.proposalStatus(0)).to.equal(1);
     });
 
 });

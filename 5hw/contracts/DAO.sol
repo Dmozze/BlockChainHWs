@@ -21,7 +21,6 @@ contract DAO is ERC20 {
     event ProposalAccepted(uint256 id);
     event ProposalRejected(uint256 id);
     event ProposalCanceled(uint256 id);
-    event Transfer(address indexed from, address indexed to, uint256 value);
 
     enum VoteType {ABSTAIN, YES, NO}
     enum Result {CANCELLED, ACCEPTED, REJECTED, ONGOING}
