@@ -16,6 +16,13 @@ contract DAO is ERC20 {
         return 6;
     }
 
+    event ProposalCreated(uint256 id, address recipient, uint256 amount);
+    event Voted(uint256 id, address voter, bool inFavor);
+    event ProposalAccepted(uint256 id);
+    event ProposalRejected(uint256 id);
+    event ProposalCanceled(uint256 id);
+    event Transfer(address indexed from, address indexed to, uint256 value);
+
     enum VoteType {ABSTAIN, YES, NO}
     enum Result {CANCELLED, ACCEPTED, REJECTED, ONGOING}
 
@@ -64,6 +71,7 @@ contract DAO is ERC20 {
         newProposal.end = block.timestamp + votingPeriod;
         newProposal.result = Result.ONGOING;
         proposalQueue.push(proposalCount);
+        emit ProposalCreated(proposalCount, msg.sender, hash);
         proposalCount++;
     }
 
@@ -112,12 +120,13 @@ contract DAO is ERC20 {
             proposal.noVotes += powerOfVote;
             proposal.votes[sender] = VoteType.NO;
         }
-
         if (proposal.yesVotes > totalSupply() / 2) {
             proposal.result = Result.ACCEPTED;
+            emit ProposalAccepted(proposal_id);
             remove(proposal_id);
         } else if (proposal.noVotes > totalSupply() / 2) {
             proposal.result = Result.REJECTED;
+            emit ProposalRejected(proposal_id);
             remove(proposal_id);
         }
     }
@@ -127,6 +136,7 @@ contract DAO is ERC20 {
         require(checkProposalInQueueByHash(hash), "Proposal not in queue");
         uint8 proposal_id = hashToPosInQueue(hash);
         voteImpl(msg.sender, proposal_id, balanceOf(msg.sender), voteIsYes);
+        emit Voted(proposal_id, msg.sender, voteIsYes);
     }
 
     function yesVotes(uint256 hash) public view returns (uint256) {
@@ -190,6 +200,7 @@ contract DAO is ERC20 {
                 voteImpl(recipient, i, balanceOf(recipient), saveVote);
             }
         }
+        emit Transfer(msg.sender, recipient, amount);
         return true;
     }
 
