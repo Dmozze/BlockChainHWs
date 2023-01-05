@@ -61,6 +61,7 @@ contract DAO is ERC20 {
     function createProposal(uint256 hash) public {
         checkAndClearQueue();
         require(proposalQueue.length < MAX_PROPOSALS_ON_VOTING, "DAO: Too many proposals on voting");
+        require(checkProposalInQueueByHash(hash) == false, "DAO: Proposal already in queue");
         // create proposal
         Proposal storage newProposal = proposals[proposalCount];
         newProposal.proposer = msg.sender;
@@ -188,7 +189,7 @@ contract DAO is ERC20 {
         for (uint8 i = 0; i < proposalQueue.length; i++) {
             if (proposals[proposalQueue[i]].votes[msg.sender] != VoteType.ABSTAIN) {
                 bool saveVote = proposals[proposalQueue[i]].votes[msg.sender] == VoteType.YES;
-                revertVoteImpl(msg.sender, i, amount, saveVote);
+                revertVoteImpl(msg.sender, i, balanceOf(msg.sender) + amount, saveVote);
                 if (balanceOf(msg.sender) > 0) {
                     voteImpl(msg.sender, i, balanceOf(msg.sender), saveVote);
                 }
